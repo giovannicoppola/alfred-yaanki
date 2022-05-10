@@ -1,4 +1,4 @@
-# yaanki <img src="src/icon.png" alt="drawing" width="30"/>
+# yaanki <img src="images/icon.png" width="30"/>
 ### yet another alfred anki (workflow)
 
 
