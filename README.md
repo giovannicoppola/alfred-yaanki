@@ -97,8 +97,8 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 - vitor and deanishe, oneupdater
 - drlulz for collecting some tools
 - benjamin gray for simple query script
-- https://github.com/kerrickstaley/genanki/blob/fc8148ab5cabeb16e8957ebb3e7d8ec48bed7cf5/genanki/util.py for the gUId, modelID
-- Anki icon from papyrus apps (https://icon-icons.com/icon/anki/93962)
+- @kerrickstaley for the gUId, modelID generating [function](https://github.com/kerrickstaley/genanki/blob/fc8148ab5cabeb16e8957ebb3e7d8ec48bed7cf5/genanki/util.py)
+- Anki icon from [papyrus apps](https://icon-icons.com/icon/anki/93962)
 - <a href="https://www.flaticon.com/free-icons/card" title="card icons">Card icons created by Victoruler - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/flash-cards" title="flash cards icons">Flash cards icons created by Freepik - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/tick" title="tick icons">Tick icons created by Freepik - Flaticon</a>
