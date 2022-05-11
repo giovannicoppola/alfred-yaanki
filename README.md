@@ -52,14 +52,14 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 - Universal Action: new cards can also be created by selecting text in any app, then launching Universal Actions and selecting 'Create New Anki Card with yaanki`. 
 
  
-## looking up a card 🗃️
+## looking up a card 🗃️ 📇
 
 - ... yaanki will show the front of the card, the deck it is from. The Anki star color will indicate the due status. Hitting `Enter` will show the back of the card and the times (or days) it will be due based on the outcome you will indicate. 
 - `ctrl-Enter` will show card details (date creation, number of reviews, due date etc)
 - `option-Enter` will show the card front in large type
 - 🖼️ denotes an image present in the card front or back. Hit `Shift` to show it as a preview item
 
-## studying with yaanki 🗂️
+## studying with yaanki 🗂️ 
 - if no search text is entered, cards are presented ordered by due date (new cards first), so review all the ones that are overdue
 
 
