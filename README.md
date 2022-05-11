@@ -35,7 +35,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 # setting up ⚙️
 1. 🚨BACK UP YOUR DECKS!🚨 yaanki is still being developed. you don't want to lose your precious cards. Howto [here](https://docs.ankiweb.net/backups.html)
 2. set the user directory with Anki decks (if needed, the default: `~/Library/Application Support/Anki2/User 1/collection.anki2` should work in most cases).
-3. optional settings (if you are not familiar with these parameters, you can find additiona information in the Anki documentation):
+3. optional settings (if you are not familiar with these parameters, you can leave the defaults or find additional information in the Anki documentation):
 	- set `AGAININTERVAL` (default: 60 seconds). Interval after which a card marked `🔴again` becomes due
 	- set `GOODINTERVAL` (default: 600 seconds). Interval after which a card marked `🟢good` becomes due
 	- set `EASYINTERVAL` (default: 4 days). Interval after which a card marked `🍰easy` becomes due
