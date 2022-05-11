@@ -54,13 +54,14 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
  
 ## looking up a card 🗃️ 📇
 
-- ... yaanki will show the front of the card, the deck it is from. The Anki star color will indicate the due status. Hitting `Enter` will show the back of the card and the times (or days) it will be due based on the outcome you will indicate. 
+- launch yaanki by entering the corresponding keyword (default: `!s`) or hotkey and search for a card by typing in Alfred. yaanki will show the front of the card, and the deck it is from. The Anki star color will indicate the due status. Hitting `Enter` will show the back of the card and the times (or days) it will be due based on the outcome you will indicate. 
 - `ctrl-Enter` will show card details (date creation, number of reviews, due date etc)
 - `option-Enter` will show the card front in large type
-- 🖼️ denotes an image present in the card front or back. Hit `Shift` to show it as a preview item
+- 🖼️ denotes an image present in the card front or back. Hit `Shift` to show it in preview 
 
 ## studying with yaanki 🗂️ 
-- if no search text is entered, cards are presented ordered by due date (new cards first), so review all the ones that are overdue
+- you can set the decks from which cards are presented by entering `yaanki:decks` in Alfred, or setting a hotkey. Shift-Enter will add or remove a deck from the list. THe deck list can also be edited in Alfred's workflow variables. 
+- launch yaanki with keyword or hotkey. if no search text is entered, cards are presented ordered by due date (new cards first), so review all the ones that are overdue
 
 
 
@@ -68,14 +69,14 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 # limitations & known issues ⚠️
 - only works with one-line text cards
 - scheduling algorithm is reverse-engineered and simplified, although some default scheduling options can be set by the user. No 'fuzz factor' delays in review not taken into account etc. It works for my purposes, but I haven't tested all use cases. 
-- limited to one deck (but can be switched, same as anki app)
+- limited to one user profile (but can be switched in setting, as in the anki app)
 - will not work while the anki app is open  
 - only 3 ease level options (instead of the typical 4) when studying:
     - Hard (default: 60 sec - can be customized with `AGAININTERVAL`)
     - Good (default: 10 min - can be customized with `GOODINTERVAL`)
     - Piece of cake (default: 4 days - can be customized with `EASYINTERVAL`)
 - hidden fields in cards (e.g. ID) are shown if they are present in the card template
-- need to open the Anki app to sync changes on the Anki server
+- need to open the Anki app to sync changes on the Anki server (AnkiWeb)
 - sub-decks not tested
 - currently all the fields beyond the first (front of the card) are joined in one (reverse). this can be changed  
 - Most of the cards I use every day are one-liners. This will not work for cards with complex text, media etc. 
@@ -83,13 +84,11 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 
 <a name="roadmap"></a>
 # roadmap 🛣️
-- option to search questions only (now it searches both questions and answers), could be by searching the field sfld as opposed to flds
+- option to search questions only (currently searching both questions and answers)
 - implement tags
-- (Delete cards, Edit cards)
+- Delete cards, Edit cards
 - creating cards with images through yannki
-- add poll to this section
-- add oneupdated
-- add review time to card info
+
 
 
 <a name="acknowledgments"></a>
