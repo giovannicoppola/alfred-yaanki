@@ -7,7 +7,7 @@
 src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total?color=purple&label=Downloads"><br/>
 </a>
 
-![](alfred-yaanki.gif)
+![](images/alfred-yaanki.gif)
 
 
 <!-- MarkdownTOC autolink="true" bracket="round" depth="3" autoanchor="true" -->
@@ -34,6 +34,8 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 <a name="setting-up"></a>
 # setting up ⚙️
 1. 🚨BACK UP YOUR DECKS!🚨 yaanki is still being developed. you don't want to lose your precious cards. Howto [here](https://docs.ankiweb.net/backups.html)
+2. - Open the 'Configure Workflow and Variables' window in paperpAlfred preferences
+			<img src='images/alfred_prefs.png' width="500">
 2. set the user directory with Anki decks (if needed, the default: `~/Library/Application Support/Anki2/User 1/collection.anki2` should work in most cases).
 3. optional settings (if you are not familiar with these parameters, you can leave the defaults or find additional information in the Anki documentation):
 	- set `AGAININTERVAL` (default: 60 seconds). Interval after which a card marked `🔴again` becomes due
@@ -43,7 +45,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 	- set `EASY_BONUS` (default: 1.3)
 	- set `GRAD_INTERVAL` (default: 1)
 	- set `INT_MODIFIER` (default: 1)
-- 
+
 
 <a name="usage"></a>
 # usage 📖
@@ -52,7 +54,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 - Universal Action: new cards can also be created by selecting text in any app, then launching Universal Actions and selecting 'Create New Anki Card with yaanki`. 
 
  
-## looking up a card 🗃️ 📇
+## looking up a card 📇
 
 - launch yaanki by entering the corresponding keyword (default: `!s`) or hotkey and search for a card by typing in Alfred. yaanki will show the front of the card, and the deck it is from. The Anki star color will indicate the due status. Hitting `Enter` will show the back of the card and the times (or days) it will be due based on the outcome you will indicate. 
 - `ctrl-Enter` will show card details (date creation, number of reviews, due date etc)
@@ -78,6 +80,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 - hidden fields in cards (e.g. ID) are shown if they are present in the card template
 - need to open the Anki app to sync changes on the Anki server (AnkiWeb)
 - sub-decks not tested
+- occasional warnings from the Anki app to 'fix the database', probably in relation to AnkiWeb
 - currently all the fields beyond the first (front of the card) are joined in one (reverse). this can be changed  
 - Most of the cards I use every day are one-liners. This will not work for cards with complex text, media etc. 
 
@@ -86,27 +89,28 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 # roadmap 🛣️
 - option to search questions only (currently searching both questions and answers)
 - implement tags
-- Delete cards, Edit cards
+- delete cards, edit cards
 - creating cards with images through yannki
 
 
 
 <a name="acknowledgments"></a>
 # thank you 🙂
-- vitor and deanishe, oneupdater
-- drlulz for collecting some tools
-- benjamin gray for simple query script
 - @kerrickstaley for the gUId, modelID generating [function](https://github.com/kerrickstaley/genanki/blob/fc8148ab5cabeb16e8957ebb3e7d8ec48bed7cf5/genanki/util.py)
 - Anki icon from [papyrus apps](https://icon-icons.com/icon/anki/93962)
 - <a href="https://www.flaticon.com/free-icons/card" title="card icons">Card icons created by Victoruler - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/flash-cards" title="flash cards icons">Flash cards icons created by Freepik - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/tick" title="tick icons">Tick icons created by Freepik - Flaticon</a>
+- [Vítor Galvão](https://github.com/vitorgalvao) for [OneUpdater](https://github.com/vitorgalvao/alfred-workflows/tree/master/OneUpdater) and terrific help on the Alfred forum.
+- [Dean Jackson](https://github.com/deanishe) for help on the Alfred forum and for sharing scripts used as inspiration for this workflow. 
+- The [Alfred forum](https://www.alfredforum.com) community.
+
 
 
 <a name="changelog"></a>
 # Changelog 🧰
 
-- 04-23-2022: version 0.1
+- 05-11-2022: version 0.1
 
 <a name="feedback"></a>
 # Feedback 🧐
