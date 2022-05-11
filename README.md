@@ -27,14 +27,14 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 <a name="motivation"></a>
 # motivation ✅
 1. **Search:** ability to quickly look up a card from any anki deck (searching both sides of cards), even if it is not scheduled for review. 
-	- Once reviewed, I would like to record the outcome and get credit for review
+	- Once reviewed, I would like to record the outcome and get credit for review.
 2. **Create:** ability to quickly create cards from Alfred. 
 3. **Study:** ability to review scheduled cards ('study') using Alfred. 
 
 <a name="setting-up"></a>
 # setting up ⚙️
 1. 🚨BACK UP YOUR DECKS!🚨 yaanki is still being developed. you don't want to lose your precious cards. Howto [here](https://docs.ankiweb.net/backups.html)
-2. set the user directory with Anki decks (if needed, default should work in most cases. Default: `~/Library/Application Support/Anki2/User 1/collection.anki2`)
+2. set the user directory with Anki decks (if needed, the default: `~/Library/Application Support/Anki2/User 1/collection.anki2` should work in most cases).
 3. optional settings (if you are not familiar with these parameters, you can find additiona information in the Anki documentation):
 	- set `AGAININTERVAL` (default: 60 seconds). Interval after which a card marked `🔴again` becomes due
 	- set `GOODINTERVAL` (default: 600 seconds). Interval after which a card marked `🟢good` becomes due
