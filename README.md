@@ -108,12 +108,12 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 
 
 <a name="changelog"></a>
-# Changelog 🧰
+# changelog 🧰
 
 - 05-11-2022: version 0.1
 
 <a name="feedback"></a>
-# Feedback 🧐
+# feedback 🧐
 
 Feedback welcome! If you notice a bug, or have ideas for new features, please feel free to get in touch either here, or on the [Alfred](https://www.alfredforum.com) forum. 
 
