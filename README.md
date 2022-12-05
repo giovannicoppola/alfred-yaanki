@@ -34,10 +34,9 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 <a name="setting-up"></a>
 # setting up ⚙️
 1. 🚨BACK UP YOUR DECKS!🚨 yaanki is still being developed. you don't want to lose your precious cards. Howto [here](https://docs.ankiweb.net/backups.html)
-2. - Open the 'Configure Workflow and Variables' window in paperpAlfred preferences
-			<img src='images/alfred_prefs.png' width="500">
-2. set the user directory with Anki decks (if needed, the default: `~/Library/Application Support/Anki2/User 1/collection.anki2` should work in most cases).
-3. optional settings (if you are not familiar with these parameters, you can leave the defaults or find additional information in the Anki documentation):
+2. Open the 'Configure Workflow' window in paperpAlfred preferences
+3. set the user directory with Anki decks (if needed, the default: `~/Library/Application Support/Anki2/User 1/collection.anki2` should work in most cases).
+4. optional settings (if you are not familiar with these parameters, you can leave the defaults or find additional information in the Anki documentation):
 	- set `AGAININTERVAL` (default: 60 seconds). Interval after which a card marked `🔴again` becomes due
 	- set `GOODINTERVAL` (default: 600 seconds). Interval after which a card marked `🟢good` becomes due
 	- set `EASYINTERVAL` (default: 4 days). Interval after which a card marked `🍰easy` becomes due
@@ -110,6 +109,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 <a name="changelog"></a>
 # changelog 🧰
 
+- 12-04-2022: version 0.2 (Alfred 5)
 - 05-11-2022: version 0.1
 
 <a name="feedback"></a>
