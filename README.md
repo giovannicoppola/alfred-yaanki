@@ -24,15 +24,15 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 
 
 
-<a name="motivation"></a>
-# motivation ✅
+<h1 id="motivation">motivation ✅</h1>
+
 1. **Search:** ability to quickly look up a card from any anki deck (searching both sides of cards), even if it is not scheduled for review. 
 	- Once reviewed, I would like to record the outcome and get credit for review.
 2. **Create:** ability to quickly create cards from Alfred. 
 3. **Study:** ability to review scheduled cards ('study') using Alfred. 
 
-<a name="setting-up"></a>
-# setting up ⚙️
+
+<h1 id="setting-up">setting up⚙️</h1>
 1. 🚨BACK UP YOUR DECKS!🚨 yaanki is still being developed. you don't want to lose your precious cards. Howto [here](https://docs.ankiweb.net/backups.html)
 2. Open the 'Configure Workflow' window in paperpAlfred preferences
 3. set the user directory with Anki decks (if needed, the default: `~/Library/Application Support/Anki2/User 1/collection.anki2` should work in most cases).
@@ -46,8 +46,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 	- set `INT_MODIFIER` (default: 1)
 
 
-<a name="usage"></a>
-# usage 📖
+<h1 id="usage">usage 📖</h1>
 ## creating new cards 📝
 - you can create a new card by entering the corresponding keyword (default: `!a`) or hotkey, then entering (or pasting into Alfred) the text of front and back separated by `//`. `--b` will invert front and back. New cards will be added to the deck listed in the `DEFAULT_DECK_NEW` Alfred environment variable, or – if that is not set – the `Default` deck. 
 - Universal Action: new cards can also be created by selecting text in any app, then launching Universal Actions and selecting 'Create New Anki Card with yaanki`. 
@@ -65,9 +64,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 - launch yaanki with keyword or hotkey. if no search text is entered, cards are presented ordered by due date (new cards first), so review all the ones that are overdue
 
 
-
-<a name="known-issues"></a>
-# limitations & known issues ⚠️
+<h1 id="known-issues">limitations & known issues ⚠️</h1>
 - only works with one-line text cards
 - scheduling algorithm is reverse-engineered and simplified, although some default scheduling options can be set by the user. No 'fuzz factor' delays in review not taken into account etc. It works for my purposes, but I haven't tested all use cases. 
 - limited to one user profile (but can be switched in setting, as in the anki app)
@@ -84,8 +81,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 - Most of the cards I use every day are one-liners. This will not work for cards with complex text, media etc. 
 
 
-<a name="roadmap"></a>
-# roadmap 🛣️
+<h1 id="roadmap">roadmap 🛣️</h1>
 - option to search questions only (currently searching both questions and answers)
 - implement tags
 - delete cards, edit cards
@@ -93,8 +89,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 
 
 
-<a name="acknowledgments"></a>
-# thank you 🙂
+<h1 id="acknowledgments">thank you 🙂</h1>
 - @kerrickstaley for the gUId, modelID generating [function](https://github.com/kerrickstaley/genanki/blob/fc8148ab5cabeb16e8957ebb3e7d8ec48bed7cf5/genanki/util.py)
 - Anki icon from [papyrus apps](https://icon-icons.com/icon/anki/93962)
 - <a href="https://www.flaticon.com/free-icons/card" title="card icons">Card icons created by Victoruler - Flaticon</a>
@@ -106,14 +101,12 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 
 
 
-<a name="changelog"></a>
-# changelog 🧰
+<h1 id="changelog">changelog 🧰</h1>
 
 - 12-04-2022: version 0.2 (Alfred 5)
 - 05-11-2022: version 0.1
 
-<a name="feedback"></a>
-# feedback 🧐
+<h1 id="feedback">feedback 🧐</h1>
 
 Feedback welcome! If you notice a bug, or have ideas for new features, please feel free to get in touch either here, or on the [Alfred](https://www.alfredforum.com) forum. 
 
