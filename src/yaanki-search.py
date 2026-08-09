@@ -17,11 +17,9 @@
 
 
 import sqlite3
-import string
 import time
 import json
 import sys
-from datetime import datetime
 import re
 import os
 
@@ -29,7 +27,7 @@ from config import ANKI_DATABASE, AGAININTERVAL, DECK_LIST, MYMODE
 from yaankiFun import *
 
 ### INITIALIZING
-MYINPUT = sys.argv[1]
+MYINPUT = sys.argv[1] if len(sys.argv) > 1 else ''
 MYQUERY = "%" + MYINPUT + "%"
 result  = {"items": []}
 QUICK_LOOK = ""
@@ -155,7 +153,8 @@ for r in rs:
     else: #due in > 1d
         dueIcon = 'star_green.png' # 🟢
 
-    # compiling the subtitle 
+    # compiling the subtitle
+    mySubtitle = deckName
     if MYMODE == "Verbose":
         mySubtitle = (deckName 
             + " type:" 

@@ -10,7 +10,7 @@ from config import ANKI_DATABASE, DEFAULT_DECK
 from yaankiFun import log
 
 ### INITIALIZING
-MYINPUT= sys.argv[1]
+MYINPUT = sys.argv[1] if len(sys.argv) > 1 else ''
 MYQUERY= "%" + MYINPUT + "%"
 result = {"items": []}
 
@@ -60,9 +60,9 @@ if (rs):
             if title in DECK_LIST:
                 myIcon = 'icons/check-mark.png'
                 actionString = "Shift-Enter to remove this deck from the default list"
-                DEFAULT_DECK_new = DEFAULT_DECK.replace(title,'')
-                DEFAULT_DECK_new = DEFAULT_DECK_new.rstrip(", ")
-                DEFAULT_DECK_new = DEFAULT_DECK_new.lstrip(", ")
+                # remove the exact deck, not a substring (avoids mangling
+                # names that contain this one, e.g. "Spanish" vs "Spanish::Verbs")
+                DEFAULT_DECK_new = ",".join(d for d in DECK_LIST if d != title)
             else:
                 myIcon = ''
                 actionString = "Shift-Enter to add this deck to the default list"

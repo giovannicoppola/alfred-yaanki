@@ -108,6 +108,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 
 <h1 id="changelog">changelog 🧰</h1>
 
+- 2026-08-08: version 0.2.1, code review — hardened config parsing so blank/unset numeric settings (e.g. `EASE_FACTOR`) no longer crash every script on import; fixed removing a deck from the default list corrupting decks whose name contains the removed one (`Spanish` vs `Spanish::Verbs`); fixed the "save both sides" new-card path passing the model/deck id under the wrong variable names (cards were saved with a null note-type/deck); guarded empty-argument runs; dropped dead imports
 - 12-04-2022: version 0.2 (Alfred 5)
 - 05-11-2022: version 0.1
 

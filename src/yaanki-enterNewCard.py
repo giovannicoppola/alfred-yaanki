@@ -19,7 +19,7 @@ myModID = checkCardType(DEF_CARD_TYPE)
 myDeckID = checkDefaultDeck(DEFAULT_DECK_NEW)
 
 
-MYTEXT= sys.argv[1]
+MYTEXT = sys.argv[1] if len(sys.argv) > 1 else ''
 MYFRONT=MYTEXT
 MYBACK=""
 result = {"items": []}
@@ -67,10 +67,10 @@ else:
         "subtitle": "↩️ to save, ⇧↩️ save both sides",
         "arg": MYFRONT + "\x1f" + MYBACK,
         "variables": {
-                "myModID": myModID,
-                
+                "myMODID": myModID,
+                "myDECKID": myDeckID
             },
-        
+
         "icon": {"path": "icons/backCard.png"}
         }])
 

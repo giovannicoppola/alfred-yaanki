@@ -5,7 +5,7 @@
 	<key>bundleid</key>
 	<string>giovanni-yaanki</string>
 	<key>category</key>
-	<string>Productivity</string>
+	<string>myWorkflows</string>
 	<key>connections</key>
 	<dict>
 		<key>02DFC6DA-18E9-4F36-9D8A-EA37DBF8341C</key>
@@ -140,16 +140,6 @@
 				<string>Show front in large type</string>
 				<key>vitoclose</key>
 				<true/>
-			</dict>
-			<dict>
-				<key>destinationuid</key>
-				<string>C4BD5E00-0E63-4AA5-96B1-F1F931545FBE</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
 			</dict>
 		</array>
 		<key>B374F707-621F-4F2E-AE3C-6FDFE2BA54C7</key>
@@ -434,6 +424,8 @@ python3 yaanki-ops.py</string>
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>availableviaurlhandler</key>
+				<false/>
 				<key>triggerid</key>
 				<string>study</string>
 			</dict>
@@ -460,7 +452,7 @@ python3 yaanki-ops.py</string>
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>keyword</key>
-				<string>!s</string>
+				<string>{var:mainkeyword}</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -478,8 +470,6 @@ python3 yaanki-search.py "$1"</string>
 				<integer>1</integer>
 				<key>scriptfile</key>
 				<string></string>
-				<key>skipuniversalaction</key>
-				<true/>
 				<key>subtext</key>
 				<string></string>
 				<key>title</key>
@@ -512,7 +502,7 @@ python3 yaanki-search.py "$1"</string>
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>keyword</key>
-				<string>!a</string>
+				<string>{var:createkeyword}</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -570,6 +560,8 @@ python3 yaanki-enterNewCard.py "$1"</string>
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>availableviaurlhandler</key>
+				<false/>
 				<key>triggerid</key>
 				<string>newCard</string>
 			</dict>
@@ -665,103 +657,6 @@ python3 yaanki_createNewCard.py "$1"</string>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>script</key>
-				<string># THESE VARIABLES MUST BE SET. SEE THE ONEUPDATER README FOR AN EXPLANATION OF EACH.
-readonly remote_info_plist='https://raw.githubusercontent.com/giovannicoppola/alfred-yaanki/main/source/info.plist'
-readonly workflow_url='https://github.com/giovannicoppola/alfred-yaanki'
-readonly download_type='github_release'
-readonly frequency_check='3'
-
-# FROM HERE ON, CODE SHOULD BE LEFT UNTOUCHED!
-function abort {
-  echo "${1}" &gt;&amp;2
-  exit 1
-}
-
-function url_exists {
-  curl --silent --location --output /dev/null --fail --range 0-0 "${1}"
-}
-
-function notification {
-  local -r notificator="$(find . -type f -name 'notificator')"
-
-  if [[ -f "${notificator}" &amp;&amp; "$(/usr/bin/file --brief --mime-type "${notificator}")" == 'text/x-shellscript' ]]; then
-    "${notificator}" --message "${1}" --title "${alfred_workflow_name}" --subtitle 'A new version is available'
-    return
-  fi
-
-  osascript -e "display notification \"${1}\" with title \"${alfred_workflow_name}\" subtitle \"A new version is available\""
-}
-
-# Local sanity checks
-readonly local_info_plist='info.plist'
-readonly local_version="$(/usr/libexec/PlistBuddy -c 'print version' "${local_info_plist}")"
-
-[[ -n "${local_version}" ]] || abort 'You need to set a workflow version in the configuration sheet.'
-[[ "${download_type}" =~ ^(direct|page|github_release)$ ]] || abort "'download_type' (${download_type}) needs to be one of 'direct', 'page', or 'github_release'."
-[[ "${frequency_check}" =~ ^[0-9]+$ ]] || abort "'frequency_check' (${frequency_check}) needs to be a number."
-
-# Check for updates
-if [[ $(find "${local_info_plist}" -mtime +"${frequency_check}"d) ]]; then
-  # Remote sanity check
-  if ! url_exists "${remote_info_plist}"; then
-    abort "'remote_info_plist' (${remote_info_plist}) appears to not be reachable."
-  fi
-
-  readonly tmp_file="$(mktemp)"
-  curl --silent --location --output "${tmp_file}" "${remote_info_plist}"
-  readonly remote_version="$(/usr/libexec/PlistBuddy -c 'print version' "${tmp_file}")"
-  rm "${tmp_file}"
-
-  if [[ "${local_version}" == "${remote_version}" ]]; then
-    touch "${local_info_plist}" # Reset timer by touching local file
-    exit 0
-  fi
-
-  if [[ "${download_type}" == 'page' ]]; then
-    notification 'Opening download page…'
-    open "${workflow_url}"
-    exit 0
-  fi
-
-  readonly download_url="$(
-    if [[ "${download_type}" == 'github_release' ]]; then
-      osascript -l JavaScript -e 'function run(argv) { return JSON.parse(argv[0])["assets"].find(asset =&gt; asset["browser_download_url"].endsWith(".alfredworkflow"))["browser_download_url"] }' "$(curl --silent "https://api.github.com/repos/${workflow_url}/releases/latest")"
-    else
-      echo "${workflow_url}"
-    fi
-  )"
-
-  if url_exists "${download_url}"; then
-    notification 'Downloading and installing…'
-    readonly download_name="$(basename "${download_url}")"
-    curl --silent --location --output "${HOME}/Downloads/${download_name}" "${download_url}"
-    open "${HOME}/Downloads/${download_name}"
-  else
-    abort "'workflow_url' (${download_url}) appears to not be reachable."
-  fi
-fi</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>C4BD5E00-0E63-4AA5-96B1-F1F931545FBE</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>action</key>
 				<integer>0</integer>
 				<key>argument</key>
@@ -812,6 +707,8 @@ fi</string>
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>availableviaurlhandler</key>
+				<false/>
 				<key>triggerid</key>
 				<string>listDecks</string>
 			</dict>
@@ -911,13 +808,13 @@ end run</string>
 
 # usage 📖
 ## creating new cards 📝
-- you can create a new card by entering the corresponding keyword (default: `!a`) or hotkey, then entering (or pasting into Alfred) the text of front and back separated by `//`. `--b` will invert front and back. New cards will be added to the deck listed in the `DEFAULT_DECK_NEW` Alfred environment variable, or – if that is not set – the `Default` deck. 
+- you can create a new card by entering the keyword (default: `!a`) or hotkey, then entering (or pasting into Alfred) the text of front and back separated by `//`. `--b` will invert front and back. New cards will be added to the deck listed in the `DEFAULT_DECK_NEW` Alfred environment variable, or – if that is not set – the `Default` deck. 
 - Universal Action: new cards can also be created by selecting text in any app, then launching Universal Actions and selecting 'Create New Anki Card with yaanki`. 
 
  
 ## looking up a card 📇
 
-- launch yaanki by entering the corresponding keyword (default: `!s`) or hotkey and search for a card by typing in Alfred. yaanki will show the front of the card, and the deck it is from. The Anki star color will indicate the due status. Hitting `Enter` will show the back of the card and the times (or days) it will be due based on the outcome you will indicate. 
+- launch yaanki by entering the keyword (default: `!s`) or hotkey and search for a card by typing in Alfred. yaanki will show the front of the card, and the deck it is from. The Anki star color will indicate the due status. Hitting `Enter` will show the back of the card and the times (or days) it will be due based on the outcome you will indicate. 
 - `ctrl-Enter` will show card details (date creation, number of reviews, due date etc)
 - `option-Enter` will show the card front in large type
 - 🖼️ denotes an image present in the card front or back. Hit `Shift` to show it in preview 
@@ -930,41 +827,41 @@ end run</string>
 		<key>02DFC6DA-18E9-4F36-9D8A-EA37DBF8341C</key>
 		<dict>
 			<key>xpos</key>
-			<integer>1335</integer>
+			<real>1335</real>
 			<key>ypos</key>
-			<integer>235</integer>
+			<real>235</real>
 		</dict>
 		<key>0643EB84-5E2A-47DD-9DAA-9D0B8ED82802</key>
 		<dict>
 			<key>xpos</key>
-			<integer>1875</integer>
+			<real>1875</real>
 			<key>ypos</key>
-			<integer>110</integer>
+			<real>110</real>
 		</dict>
 		<key>0AE4A9C1-C5BB-49FA-934E-7AD799E7D0AA</key>
 		<dict>
 			<key>note</key>
 			<string>Show card info</string>
 			<key>xpos</key>
-			<integer>560</integer>
+			<real>560</real>
 			<key>ypos</key>
-			<integer>40</integer>
+			<real>40</real>
 		</dict>
 		<key>183DFAB4-92D1-46C1-A43A-802F33856F1B</key>
 		<dict>
 			<key>note</key>
 			<string>Show card front in large type</string>
 			<key>xpos</key>
-			<integer>560</integer>
+			<real>560</real>
 			<key>ypos</key>
-			<integer>395</integer>
+			<real>395</real>
 		</dict>
 		<key>2BD2F868-BE9D-4F5E-A74C-ABA27F68509F</key>
 		<dict>
 			<key>xpos</key>
-			<integer>420</integer>
+			<real>420</real>
 			<key>ypos</key>
-			<integer>820</integer>
+			<real>820</real>
 		</dict>
 		<key>357C9DD0-990A-4866-A034-FB2A89858127</key>
 		<dict>
@@ -973,9 +870,9 @@ end run</string>
 			<key>note</key>
 			<string>Enter a new card</string>
 			<key>xpos</key>
-			<integer>1510</integer>
+			<real>1510</real>
 			<key>ypos</key>
-			<integer>235</integer>
+			<real>235</real>
 		</dict>
 		<key>47781016-8C89-4ABC-B00B-61831A6D73C9</key>
 		<dict>
@@ -984,148 +881,392 @@ end run</string>
 			<key>note</key>
 			<string>Updating tables</string>
 			<key>xpos</key>
-			<integer>770</integer>
+			<real>770</real>
 			<key>ypos</key>
-			<integer>225</integer>
+			<real>225</real>
 		</dict>
 		<key>509DF1B9-E2F0-4841-9D11-9797DBCEDB43</key>
 		<dict>
 			<key>note</key>
 			<string>answer</string>
 			<key>xpos</key>
-			<integer>560</integer>
+			<real>560</real>
 			<key>ypos</key>
-			<integer>225</integer>
+			<real>225</real>
 		</dict>
 		<key>7962BD19-5951-417F-AA2C-2094F1C5AAD9</key>
 		<dict>
 			<key>xpos</key>
-			<integer>215</integer>
+			<real>215</real>
 			<key>ypos</key>
-			<integer>820</integer>
+			<real>820</real>
 		</dict>
 		<key>875F747E-C9E3-4925-A3CC-0EE03BB66263</key>
 		<dict>
 			<key>xpos</key>
-			<integer>1870</integer>
+			<real>1870</real>
 			<key>ypos</key>
-			<integer>235</integer>
+			<real>235</real>
 		</dict>
 		<key>A45876BA-DC0B-45A1-8142-0EC60F229D6C</key>
 		<dict>
 			<key>xpos</key>
-			<integer>50</integer>
+			<real>50</real>
 			<key>ypos</key>
-			<integer>230</integer>
+			<real>230</real>
 		</dict>
 		<key>ABA96927-9C04-4E34-8287-DA5AA47094D6</key>
 		<dict>
+			<key>colorindex</key>
+			<integer>1</integer>
+			<key>note</key>
+			<string>search card</string>
 			<key>xpos</key>
-			<integer>260</integer>
+			<real>260</real>
 			<key>ypos</key>
-			<integer>230</integer>
+			<real>230</real>
 		</dict>
 		<key>B374F707-621F-4F2E-AE3C-6FDFE2BA54C7</key>
 		<dict>
 			<key>xpos</key>
-			<integer>50</integer>
+			<real>50</real>
 			<key>ypos</key>
-			<integer>100</integer>
+			<real>100</real>
 		</dict>
 		<key>B6C41CBE-E3FC-4AB4-8F98-95BF95AE099B</key>
 		<dict>
 			<key>note</key>
 			<string>Create a new card</string>
 			<key>xpos</key>
-			<integer>1695</integer>
+			<real>1695</real>
 			<key>ypos</key>
-			<integer>235</integer>
+			<real>235</real>
 		</dict>
 		<key>B969CAED-533E-414A-A184-0BFD4450F13B</key>
 		<dict>
 			<key>xpos</key>
-			<integer>35</integer>
+			<real>35</real>
 			<key>ypos</key>
-			<integer>685</integer>
+			<real>685</real>
 		</dict>
 		<key>BDE3C2C8-B67C-4BA0-9E3B-0D8F2DEEF258</key>
 		<dict>
 			<key>xpos</key>
-			<integer>600</integer>
+			<real>600</real>
 			<key>ypos</key>
-			<integer>820</integer>
+			<real>820</real>
 		</dict>
 		<key>C1D75E73-5F42-4289-894D-1A5BAC2114CC</key>
 		<dict>
 			<key>note</key>
 			<string>Show card back in large type</string>
 			<key>xpos</key>
-			<integer>770</integer>
+			<real>770</real>
 			<key>ypos</key>
-			<integer>395</integer>
+			<real>395</real>
 		</dict>
 		<key>C471A4A3-6F35-44F6-81C0-B1C13FF4A9F5</key>
 		<dict>
 			<key>xpos</key>
-			<integer>970</integer>
+			<real>970</real>
 			<key>ypos</key>
-			<integer>225</integer>
-		</dict>
-		<key>C4BD5E00-0E63-4AA5-96B1-F1F931545FBE</key>
-		<dict>
-			<key>colorindex</key>
-			<integer>12</integer>
-			<key>note</key>
-			<string>OneUpdater</string>
-			<key>xpos</key>
-			<integer>420</integer>
-			<key>ypos</key>
-			<integer>555</integer>
+			<real>225</real>
 		</dict>
 		<key>E4DB5F08-A4D0-4DEE-ACC3-0447D6AC4183</key>
 		<dict>
 			<key>xpos</key>
-			<integer>1335</integer>
+			<real>1335</real>
 			<key>ypos</key>
-			<integer>110</integer>
+			<real>110</real>
 		</dict>
 		<key>F8D6F400-8ED9-49F6-B88A-EB5120AF5052</key>
 		<dict>
 			<key>xpos</key>
-			<integer>40</integer>
+			<real>40</real>
 			<key>ypos</key>
-			<integer>820</integer>
+			<real>820</real>
 		</dict>
 	</dict>
-	<key>variables</key>
-	<dict>
-		<key>AGAININTERVAL</key>
-		<string>60</string>
-		<key>ANKI_DATABASE</key>
-		<string>~/Library/Application Support/Anki2/User 1/collection.anki2</string>
-		<key>DEFAULT_DECKS</key>
-		<string>Default</string>
-		<key>DEFAULT_DECK_NEW</key>
-		<string>Default</string>
-		<key>DEFAULT_NEWCARD_TYPE</key>
-		<string>Basic (optional reversed card)</string>
-		<key>EASE_FACTOR</key>
-		<string>2500</string>
-		<key>EASYINTERVAL</key>
-		<string>4</string>
-		<key>EASY_BONUS</key>
-		<string>1.3</string>
-		<key>GOODINTERVAL</key>
-		<string>600</string>
-		<key>GRAD_INTERVAL</key>
-		<string>1</string>
-		<key>INT_MODIFIER</key>
-		<string>1</string>
-	</dict>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>60</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Interval after which a card marked 🔴again becomes due</string>
+			<key>label</key>
+			<string>Again interval</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>AGAININTERVAL</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>600</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Interval after which a card marked `🟢good` becomes due</string>
+			<key>label</key>
+			<string>Good Interval</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>GOODINTERVAL</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>4</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Interval after which a card marked 🍰easy becomes due</string>
+			<key>label</key>
+			<string>Easy Interval</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>EASYINTERVAL</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>2500</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Ease factor</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>EASE_FACTOR</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>~/Library/Application Support/Anki2/User 1/collection.anki2</string>
+				<key>filtermode</key>
+				<integer>1</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>User folder with Anki decks</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>ANKI_DATABASE</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>Miscellanea</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>New cards will be added to the deck listed here or – if that is not set – the `Default` deck.</string>
+			<key>label</key>
+			<string>Deck for new cards</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>DEFAULT_DECK_NEW</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>Default</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Set here, or through the yaanki:decks command</string>
+			<key>label</key>
+			<string>Comma-separated default decks</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>DEFAULT_DECKS</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>1.5</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Easy Bonus</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>EASY_BONUS</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>1</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>GRAD_INTERVAL</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>GRAD_INTERVAL</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>1</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>INT_MODIFIER</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>INT_MODIFIER</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>Basic (optional reversed card)</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Type of new cards</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>DEFAULT_NEWCARD_TYPE</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>!s</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Main Keyword (search)</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>mainkeyword</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>!a</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>New Card Keyword</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>createkeyword</string>
+		</dict>
+	</array>
 	<key>variablesdontexport</key>
 	<array/>
 	<key>version</key>
-	<string>0.1</string>
+	<string>0.2.1</string>
 	<key>webaddress</key>
 	<string>https://github.com/giovannicoppola/alfred-yaanki</string>
 </dict>

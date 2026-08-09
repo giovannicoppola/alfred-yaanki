@@ -14,22 +14,22 @@ import os
 import sqlite3
 import json
 from config import AGAININTERVAL, GOODINTERVAL, EASYINTERVAL, GRAD_INTERVAL, INT_MODIFIER, \
-ANKI_MEDIA_FOLDER, DEF_CARD_TYPE, ANKI_DATABASE, DEFAULT_DECK
+ANKI_MEDIA_FOLDER, DEF_CARD_TYPE, ANKI_DATABASE, DEFAULT_DECK, _int_env, _float_env
 myNow = int(time.time())
 
-myType=int(os.path.expanduser(os.getenv('last_type', '0'))) #type of current card
-myFactor=int(os.path.expanduser(os.getenv('last_factor', '0'))) #previous factor of current card
-prevIvl=int(os.path.expanduser(os.getenv('last_ivl', '0'))) #previous interval of current card
-myPrevEase=int(os.path.expanduser(os.getenv('last_ease', '0'))) #previous ease of current card
-EASY_BONUS =float(os.path.expanduser(os.getenv('EASY_BONUS', '0'))) # default ease factor
-myLapses=int(os.path.expanduser(os.getenv('last_lapses', '0'))) #current lapses
-# for some reason thes variables are not passed as integers, even if defined as such
+myType = _int_env('last_type')       # type of current card
+myFactor = _int_env('last_factor')   # previous factor of current card
+prevIvl = _int_env('last_ivl')       # previous interval of current card
+myPrevEase = _int_env('last_ease')   # previous ease of current card
+EASY_BONUS = _float_env('EASY_BONUS')  # easy bonus factor
+myLapses = _int_env('last_lapses')   # current lapses
+# these variables arrive from Alfred as strings, even when defined as numbers
 
 
-myQueue=os.path.expanduser(os.getenv('last_queue', '0')) # queue of current card
-col_creation=os.path.expanduser(os.getenv('col_creation', '')) # creation of the collection, timestamp
+myQueue = os.getenv('last_queue', '0')        # queue of current card
+col_creation = os.getenv('col_creation', '')  # creation of the collection, timestamp
 
-DEFAULT_FACTOR=int(os.path.expanduser(os.getenv('EASE_FACTOR', ''))) # default ease factor (need for introduction in graduation cards)
+DEFAULT_FACTOR = _int_env('EASE_FACTOR')  # default ease factor (needed for graduating cards)
 
 
 
