@@ -51,6 +51,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 
 ## creating new cards 📝
 - you can create a new card by entering the corresponding keyword (default: `!a`) or hotkey, then entering (or pasting into Alfred) the text of front and back separated by `//`. `--b` will invert front and back. New cards will be added to the deck listed in the `DEFAULT_DECK_NEW` Alfred environment variable, or – if that is not set – the `Default` deck. 
+- `Enter` saves the card; `Shift-Enter` also saves the reversed card (back ▶️ front). Cards are created for every template of the note type, as in Anki: with `DEFAULT_NEWCARD_TYPE` set to `Basic (and reversed card)`, a single `Enter` gives you both directions. 
 - Universal Action: new cards can also be created by selecting text in any app, then launching Universal Actions and selecting 'Create New Anki Card with yaanki`. 
 
  
@@ -62,7 +63,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 - 🖼️ denotes an image present in the card front or back. Hit `Shift` to show it in preview 
 
 ## studying with yaanki 🗂️ 
-- you can set the decks from which cards are presented by entering `yaanki:decks` in Alfred, or setting a hotkey. Shift-Enter will add or remove a deck from the list. THe deck list can also be edited in Alfred's workflow variables. 
+- you can set the decks from which cards are presented by entering `yaanki:decks` in Alfred, or setting a hotkey. Shift-Enter will add or remove a deck from the list. The deck list can also be edited in Alfred's workflow variables. Selecting a deck includes its subdecks (e.g. `Spanish` also covers `Spanish::Verbs`). If recently added cards don't show up, check that their deck is in this list. 
 - launch yaanki with keyword or hotkey. if no search text is entered, cards are presented ordered by due date (new cards first), so review all the ones that are overdue
 
 
@@ -78,7 +79,6 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
     - Piece of cake (default: 4 days - can be customized with `EASYINTERVAL`)
 - hidden fields in cards (e.g. ID) are shown if they are present in the card template
 - need to open the Anki app to sync changes on the Anki server (AnkiWeb)
-- sub-decks not tested
 - occasional warnings from the Anki app to 'fix the database', probably in relation to AnkiWeb
 - currently all the fields beyond the first (front of the card) are joined in one (reverse). this can be changed  
 - Most of the cards I use every day are one-liners. This will not work for cards with complex text, media etc. 
@@ -108,6 +108,7 @@ src="https://img.shields.io/github/downloads/giovannicoppola/alfred-yaanki/total
 
 <h1 id="changelog">changelog 🧰</h1>
 
+- 2026-09-27: version 0.2.2 — new cards now get the right number of fields for their note type (fixes Anki's "list index out of range" error opening yaanki cards and the `db-check` warnings, #4), a proper duplicate-check checksum, and one card per template (e.g. both directions for `Basic (and reversed card)`); wired `Shift-Enter` to "save both sides" (#3); the deck filter now includes subdecks and shows `Parent::Child` names (#5); new cards bump the collection's modified time so the next Anki sync picks them up
 - 2026-08-08: version 0.2.1, code review — hardened config parsing so blank/unset numeric settings (e.g. `EASE_FACTOR`) no longer crash every script on import; fixed removing a deck from the default list corrupting decks whose name contains the removed one (`Spanish` vs `Spanish::Verbs`); fixed the "save both sides" new-card path passing the model/deck id under the wrong variable names (cards were saved with a null note-type/deck); guarded empty-argument runs; dropped dead imports
 - 12-04-2022: version 0.2 (Alfred 5)
 - 05-11-2022: version 0.1

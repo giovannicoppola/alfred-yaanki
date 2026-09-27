@@ -8,6 +8,7 @@ import time
 import sys
 import hashlib
 import os
+import html
 
 from config import ANKI_DATABASE
 from yaankiFun import * 
@@ -51,60 +52,87 @@ def guid_for(*values):
 
 
 
-myModID = os.getenv('myMODID')
-myDeckID = os.getenv('myDECKID')
-
+myModID = int(os.getenv('myMODID'))
+myDeckID = int(os.getenv('myDECKID'))
+bothSides = os.getenv('bothSides') == '1'  # ⇧↩️: also save the reversed card (back -> front)
 
 myTags = ''
 
-myString = sys.argv[1]
-myHash = guid_for(myTimeStamp,myString)
+myString = sys.argv[1] if len(sys.argv) > 1 else ''
+myFront, _, myBack = myString.partition("\x1f")
 
-myQuestion = myString.split("\x1f")[0]
-
-
-### adding a new record to 'notes'
-count = cursor.execute (""" INSERT INTO "notes"
-  VALUES(
-    ?,  -- unique ID (myTimeStamp)
-    ?,  -- unique ID (myHash)
-    ?,  -- note model ID 
-    ?,  -- modification timestamp, epoch seconds (timestamp/1000)
-    -1, -- update sequence number: for finding diffs when syncing.
-    ?,  -- space-separated string of tags. (myTags)
-    ?,  -- the values of the fields in this note. separated by 0x1f (31) character. (myString)
-    ?,  -- sort field: used for quick sorting and duplicate check. The sort field is an integer so that when users are sorting on a field that contains only numbers, they are sorted in numeric instead of lexical order. Text is stored in this integer field.
-    '',  -- field checksum used for duplicate check.
-    0,  -- flags, unused
-    '') -- data, unused
-    """,(myTimeStamp,myHash,myModID,round((myTimeStamp/1000),0),myTags,myString,myQuestion))
+NOTETYPE = noteTypeInfo(db, myModID)
 
 
-### adding a new record to 'cards'
-count = cursor.execute (""" INSERT INTO "cards"
-  VALUES(
-    ?, -- cardID (timestamp)
-    ?, -- note ID (also my timestamp for now)
-    ?, -- did (deck ID)
-    0, -- ord
-    0, -- mod
-    -1, -- usn
-    0,  -- type
-    0,  -- queue
-    0, -- due
-    1, -- ivl
-    0, -- factor
-    0, -- reps
-    0, -- lapses
-    0, -- left
-    0, -- odue
-    0, -- odid
-    0, -- flags
-    '' --data
-    )
-    """,(myTimeStamp,myTimeStamp,myDeckID))
+def nextID(table):
+    """Anki ids are ms timestamps; take now, or one past the newest id if that is later."""
+    (maxID,) = cursor.execute(f'SELECT max(id) FROM {table}').fetchone()
+    return max(myTimeStamp, (maxID or 0) + 1)
+
+
+def stripHTML(myText):
+    return html.unescape(removeTags(myText)).strip()
+
+
+def addNote(front, back):
+    # the note must have exactly as many fields as its note type, otherwise Anki crashes
+    # opening it (IndexError in notes.items) and 'Check Database' flags it
+    fields = ([front, back] + [''] * NOTETYPE["nfields"])[:max(NOTETYPE["nfields"], 1)]
+    noteID = nextID('notes')
+    myFlds = "\x1f".join(fields)
+    sortField = stripHTML(fields[min(NOTETYPE["sortf"], len(fields) - 1)])
+    checksum = int(hashlib.sha1(stripHTML(fields[0]).encode('utf-8')).hexdigest()[:8], 16)
+
+    ### adding a new record to 'notes'
+    cursor.execute(""" INSERT INTO "notes"
+      VALUES(
+        ?,  -- unique ID (timestamp)
+        ?,  -- globally unique ID (hash)
+        ?,  -- note model ID
+        ?,  -- modification timestamp, epoch seconds
+        -1, -- update sequence number: for finding diffs when syncing.
+        ?,  -- space-separated string of tags. (myTags)
+        ?,  -- the values of the fields in this note. separated by 0x1f (31) character.
+        ?,  -- sort field: used for quick sorting and duplicate check.
+        ?,  -- field checksum used for duplicate check: first 8 hex digits of sha1(first field)
+        0,  -- flags, unused
+        '') -- data, unused
+        """, (noteID, guid_for(noteID, myFlds), myModID, int(noteID / 1000), myTags, myFlds, sortField, checksum))
+
+    ### adding a record to 'cards' for each template that this note generates
+    # (e.g. 'Basic (and reversed card)' gets both directions, as when adding in Anki)
+    for cardOrd in cardOrds(NOTETYPE, fields):
+        cursor.execute(""" INSERT INTO "cards"
+          VALUES(
+            ?, -- cardID (timestamp)
+            ?, -- note ID
+            ?, -- did (deck ID)
+            ?, -- ord (template)
+            ?, -- mod
+            -1, -- usn
+            0,  -- type
+            0,  -- queue
+            0, -- due
+            0, -- ivl
+            0, -- factor
+            0, -- reps
+            0, -- lapses
+            0, -- left
+            0, -- odue
+            0, -- odid
+            0, -- flags
+            '' --data
+            )
+            """, (nextID('cards'), noteID, myDeckID, cardOrd, int(noteID / 1000)))
+
+
+addNote(myFront, myBack)
+if bothSides and myBack:
+    addNote(myBack, myFront)
+
+# bump the collection modification time so that the next Anki sync picks up the new cards
+cursor.execute('UPDATE col SET mod = ?', (round(time.time() * 1000),))
 
 db.commit()
 
 ## note: will need to add to the tags table as well if I implement tags
-

@@ -7,17 +7,17 @@ import sqlite3
 import sys
 import json
 from config import ANKI_DATABASE, DEFAULT_DECK
-from yaankiFun import log
+from yaankiFun import log, deckName
 
 ### INITIALIZING
 MYINPUT = sys.argv[1] if len(sys.argv) > 1 else ''
-MYQUERY= "%" + MYINPUT + "%"
+MYQUERY= "%" + MYINPUT.replace('::', '\x1f') + "%"
 result = {"items": []}
 
 db = sqlite3.connect(ANKI_DATABASE)
 cursor = db.cursor()
 
-DECK_LIST = [x.strip() for x in DEFAULT_DECK.split(',') if x]
+DECK_LIST = [deckName(x) for x in DEFAULT_DECK.split(',') if x.strip()]
 
 
 try:
@@ -48,7 +48,7 @@ if (rs):
     
     for r in rs:
         myIcon = ''
-        title = r[0]  
+        title = deckName(r[0])  # 'Parent::Child'
         
         subtitle = DEFAULT_DECK
         

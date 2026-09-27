@@ -48,6 +48,11 @@ def log(s, *args):
     print(s, file=sys.stderr)
 
 
+def deckName(name):
+    """Anki stores subdeck names as 'Parent\x1fChild'; show and match them as 'Parent::Child'."""
+    return name.replace('\x1f', '::').strip()
+
+
 def checkCardType(DEF_CARD_TYPE):
     db = sqlite3.connect(ANKI_DATABASE)
     
@@ -83,6 +88,84 @@ def checkCardType(DEF_CARD_TYPE):
     return NOTETYPES[DEF_CARD_TYPE]
 
 
+def _pb_read(buf):
+    """Minimal protobuf wire-format reader for Anki's notetype config blobs.
+    Returns a list of (field_number, value); varints as int, length-delimited as bytes."""
+    out, i = [], 0
+
+    def varint():
+        nonlocal i
+        v = shift = 0
+        while True:
+            b = buf[i]
+            i += 1
+            v |= (b & 0x7f) << shift
+            shift += 7
+            if b < 0x80:
+                return v
+
+    while i < len(buf):
+        key = varint()
+        field, wire = key >> 3, key & 7
+        if wire == 0:
+            val = varint()
+        elif wire == 2:
+            n = varint()
+            val = buf[i:i + n]
+            i += n
+        elif wire == 1:
+            val = buf[i:i + 8]
+            i += 8
+        elif wire == 5:
+            val = buf[i:i + 4]
+            i += 4
+        else:
+            break
+        out.append((field, val))
+    return out
+
+
+def noteTypeInfo(db, ntid):
+    """Field count, sort field, cloze flag and card-generation requirements of a note type."""
+    # the fields table is declared with Anki's own 'unicase' collation and can't be read without it;
+    # a stand-in is fine here because it is only used for reading, never to write those tables
+    db.create_collation('unicase', lambda x, y: (x.casefold() > y.casefold()) - (x.casefold() < y.casefold()))
+    (nfields,) = db.execute('SELECT count(*) FROM fields WHERE ntid = ?', (ntid,)).fetchone()
+    row = db.execute('SELECT config FROM notetypes WHERE id = ?', (ntid,)).fetchone()
+    config = row[0] if row else b''
+
+    info = {"nfields": nfields, "sortf": 0, "cloze": False, "reqs": []}
+    for field, val in _pb_read(config):
+        if field == 1:
+            info["cloze"] = (val == 1)
+        elif field == 2:
+            info["sortf"] = val
+        elif field == 8:  # CardRequirement {card_ord=1, kind=2 (0 none, 1 any, 2 all), field_ords=3}
+            req = {"ord": 0, "kind": 0, "fields": []}
+            for f, v in _pb_read(val):
+                if f == 1:
+                    req["ord"] = v
+                elif f == 2:
+                    req["kind"] = v
+                elif f == 3:  # packed or single
+                    if isinstance(v, bytes):
+                        req["fields"].extend(v)  # field ords are < 128, one byte each
+                    else:
+                        req["fields"].append(v)
+            info["reqs"].append(req)
+    return info
+
+
+def cardOrds(info, fields):
+    """Which templates produce a card for these field values (Anki's cached requirements)."""
+    ords = []
+    for req in info["reqs"]:
+        filled = [f < len(fields) and fields[f].strip() != '' for f in req["fields"]]
+        if (req["kind"] == 2 and filled and all(filled)) or (req["kind"] == 1 and any(filled)):
+            ords.append(req["ord"])
+    return ords or [0]
+
+
 def checkDefaultDeck(DefDeck):
     db = sqlite3.connect(ANKI_DATABASE)
     
@@ -93,9 +176,9 @@ def checkDefaultDeck(DefDeck):
     db.row_factory = sqlite3.Row
     wwq = db.execute(mysql_string).fetchall()
     for wwqq in wwq:
-        MY_DECKS.update ({wwqq['name']: wwqq['id']}) #converting a table to a dictionary    
+        MY_DECKS.update ({deckName(wwqq['name']): wwqq['id']}) #converting a table to a dictionary    
 
-  
+    DefDeck = deckName(DefDeck)
 
     if DefDeck not in MY_DECKS.keys():
         

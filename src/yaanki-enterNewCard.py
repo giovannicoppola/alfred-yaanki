@@ -51,26 +51,27 @@ else:
             MYBACK = MYTEXT.split("//")[1].strip()
 
 
+    myVars = {"myMODID": myModID, "myDECKID": myDeckID, "bothSides": "0"}
+    bothVars = dict(myVars, bothSides="1")
+    bothMod = {"shift": {
+        "subtitle": "⇧↩️ save both sides: also add the reversed card (" + MYBACK + " ▶️ " + MYFRONT + ")",
+        "valid": bool(MYBACK),
+        "arg": MYFRONT + "\x1f" + MYBACK,
+        "variables": bothVars}}
+
     result["items"].extend([{
         "title": "▶️ "+ MYFRONT,
         "subtitle": "enter front and back separated by //, --b to invert",
         "arg": MYFRONT+"\x1f"+MYBACK,
-            "variables": {
-                "myMODID": myModID,
-                "myDECKID": myDeckID
-                
-            },
-        
+        "variables": myVars,
+        "mods": bothMod,
         "icon": {"path": "icons/frontCard.png"}
         },{
         "title": MYBACK + " ◀️",
         "subtitle": "↩️ to save, ⇧↩️ save both sides",
         "arg": MYFRONT + "\x1f" + MYBACK,
-        "variables": {
-                "myMODID": myModID,
-                "myDECKID": myDeckID
-            },
-
+        "variables": myVars,
+        "mods": bothMod,
         "icon": {"path": "icons/backCard.png"}
         }])
 

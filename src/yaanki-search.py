@@ -44,12 +44,14 @@ mysql_string = 'SELECT id,name FROM decks'
 db.row_factory = sqlite3.Row
 wwq = db.execute(mysql_string).fetchall()
 for wwqq in wwq:
-    MY_DECKS.update ({wwqq['name']: wwqq['id']}) #converting a table to a dictionary    
+    MY_DECKS.update ({deckName(wwqq['name']): wwqq['id']}) #converting a table to a dictionary    
     
 
 if len(DECK_LIST): #if there is at least one entry in the DEFAULT_DECKS variable
-    MY_DECKS={k: MY_DECKS.get(k, None) for k in DECK_LIST} #subset of decks set by the user
-    MY_DECKS = list(MY_DECKS.values()) #fetching deck IDs
+    # subset of decks set by the user, including their subdecks ('Spanish' -> 'Spanish::Verbs')
+    WANTED = [deckName(d) for d in DECK_LIST]
+    MY_DECKS = [deckID for name, deckID in MY_DECKS.items()
+                if any(name == w or name.startswith(w + '::') for w in WANTED)]
     
 else:
     MY_DECKS = list(MY_DECKS.values()) #no deck list set -> all
@@ -88,7 +90,7 @@ countR=1
 for r in rs:
     string = r[0]  #string including front and back separated by \x1f
     noteID = r[1]   # note ID
-    deckName = r[2] #deck name
+    myDeckName = deckName(r[2]) #deck name ('Parent::Child')
     cardID = r[3] #cardID
     lapses = r[6] # number of lapses
     reps = r[7] #number of reps
@@ -138,12 +140,13 @@ for r in rs:
     string = string.replace("&nbsp;", "") # cleaning up HTML, might need to add more 
     fields = string.split("\x1f")
     
+    rest = "-".join(f for f in fields[1:] if f.strip())  # skip empty extra fields
     if c_order == 0:    
         question = fields[0]
-        answer = "-".join(fields[1:])
+        answer = rest
     else:
         answer = fields[0]
-        question = "-".join(fields[1:])
+        question = rest
     
     # setting the star/due icon
     if (dueTS < (myTimeStamp/1000)) or dueDate == "New" : #if due time is before now, or it is a new card
@@ -154,9 +157,9 @@ for r in rs:
         dueIcon = 'star_green.png' # 🟢
 
     # compiling the subtitle
-    mySubtitle = deckName
+    mySubtitle = myDeckName
     if MYMODE == "Verbose":
-        mySubtitle = (deckName 
+        mySubtitle = (myDeckName 
             + " type:" 
             + str(type) 
             + " last: " 
@@ -173,7 +176,7 @@ for r in rs:
             + str(lapses)
         )
     elif MYMODE == "Standard": 
-        mySubtitle = (deckName 
+        mySubtitle = (myDeckName 
             + " –"
             + lastDueBlock
         )
